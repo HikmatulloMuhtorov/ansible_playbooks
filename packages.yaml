@@ -1,0 +1,8 @@
+---
+- name: installs packages
+  hosts: localhost
+  tasks: 
+    - yum: 
+        name: vim,curl,wget
+        state: installed
+        
