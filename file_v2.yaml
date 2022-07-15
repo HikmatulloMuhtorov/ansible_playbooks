@@ -1,0 +1,10 @@
+---
+- name: creates and adds 2 lines to the file - Version 2
+  hosts: localhost
+  tasks: 
+    - blockinfile: 
+        path: /root/git_repositories/ansible_playbooks/myfile
+        create: yes 
+        block: |
+          This is line 1
+          This is line 2
