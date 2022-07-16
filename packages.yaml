@@ -1,8 +1,7 @@
 ---
 - name: installs packages
-  hosts: localhost
+  hosts: ungrouped
   tasks: 
     - yum: 
         name: vim,curl,wget
         state: installed
-        
