@@ -1,0 +1,104 @@
+---
+- name: installs apache on ubuntu and centos server
+  hosts: all
+  tasks:
+    - name: installs httpd
+      when: ansible_distribution == "CentOS"
+      yum: 
+        name: httpd
+        state: present
+    - name: disables selinux
+      when: ansible_distribution == "CentOS"
+      lineinfile: 
+        path: /etc/selinux/config
+        regexp: '^SELINUX='
+        line: SELINUX=Disabled
+    - name: installs remi repository
+      when: ansible_distribution == "CentOS"
+      yum: 
+         name: https://rpms.remirepo.net/enterprise/remi-release-7.rpm
+         state: present
+         install_repoquery: yes
+    - name: Installing php
+      when: ansible_distribution == "CentOS"
+      yum:
+        enablerepo: "remi,remi-php80"
+        name:
+        - php
+        - php-common
+        - php-cli
+        - php-gd
+        - php-curl
+        - php-mysqlnd
+        - php-fpm
+        - php-mysqli
+        state: latest
+    - name: starts httpd 
+      when: ansible_distribution == "CentOS"
+      service:
+        name: httpd
+        enabled: yes
+        state: started
+    - name: unzips wordpress
+      when: ansible_distribution == "CentOS"
+      unarchive: 
+        src: http://wordpress.org/latest.tar.gz
+        dest: /root/
+        remote_src: yes
+        owner: apache
+    - name: copys wordpress folders
+      when: ansible_distribution == "CentOS"
+      copy:
+        src: /root/wordpress/
+        dest: /var/www/html/
+        remote_src: yes
+    - name: creates a folder 
+      when: ansible_distribution == "CentOS"
+      file:
+        path: /var/www/html/wp-content/uploads
+        state: directory
+    
+    
+    - name: installs apache
+      when: ansible_distribution == "Ubuntu"
+      apt:
+        name: apache2
+    - name: installs php
+      when: ansible_distribution == "Ubuntu"
+      apt:
+        name:
+        - php
+        - libapache2-mod-php
+        - php-mysql
+        - php-curl
+        - php-gd
+        - php-mbstring
+        - php-xml
+        - php-xmlrpc
+        - php-soap
+        - php-intl
+        - php-zip
+    - name: starts apache
+      when: ansible_distribution == "Ubuntu"
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+    - name: installs wordpress
+      when: ansible_distribution == "Ubuntu"
+      unarchive:
+        src: https://wordpress.org/latest.tar.gz
+        dest: /tmp/
+        owner: www-data
+        remote_src: yes
+    - name: copys wordpress configuration files into /var/www/html
+      when: ansible_distribution == "Ubuntu"
+      copy:
+        src: /tmp/wordpress/
+        dest: /var/www/html
+        remote_src: yes
+    - name: removes index.html file
+      when: ansible_distribution == "Ubuntu"
+      file:
+        path: /var/www/html/index.html
+        state: absent
