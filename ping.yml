@@ -1,6 +1,7 @@
 ---
 - name: Ping Servers
-  hosts: ungrouped
+  hosts: all
+  gather_facts: false
   tasks: 
     - name: Ping
       ping:
