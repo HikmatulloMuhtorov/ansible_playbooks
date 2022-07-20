@@ -1,0 +1,12 @@
+---
+- name: prints the output of free -m and df -h
+  hosts: all
+  tasks:
+    - name:
+      command: free -m
+      register: result 
+    - name: 
+      command: df -h
+      register: result
+    - debug:
+        var: result
